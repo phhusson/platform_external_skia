@@ -17,6 +17,11 @@
 #include "SkTHash.h"
 #include "SkTArray.h"
 
+#if defined(SK_BUILD_FOR_ANDROID)
+#include "android-base/properties.h"
+using android::base::GetBoolProperty;
+#endif
+
 class GrGLContextInfo;
 class GrGLRenderTarget;
 
@@ -330,8 +335,14 @@ public:
     /// Are textures with GL_TEXTURE_RECTANGLE type supported.
     bool rectangleTextureSupport() const { return fRectangleTextureSupport; }
 
+#if !defined(SK_BUILD_FOR_ANDROID)
     /// GL_ARB_texture_swizzle
     bool textureSwizzleSupport() const { return fTextureSwizzleSupport; }
+#else
+    bool textureSwizzleSupport() const {
+        return !GetBoolProperty("ro.skia.ignore_swizzle", false) && fTextureSwizzleSupport;
+    }
+#endif
 
     bool mipMapLevelAndLodControlSupport() const { return fMipMapLevelAndLodControlSupport; }
 
