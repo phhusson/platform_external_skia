@@ -3,6 +3,7 @@
 cc_library_static {
     name: "libskia",
     host_supported: true,
+    shared_libs: [ "libbase" ],
     cflags: [
         "-U_FORTIFY_SOURCE",
         "-DATRACE_TAG=ATRACE_TAG_VIEW",
