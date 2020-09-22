@@ -22,6 +22,11 @@
 #include "src/gpu/gl/GrGLTexture.h"
 #include "src/utils/SkJSONWriter.h"
 
+#if defined(SK_BUILD_FOR_ANDROID)
+#include "android-base/properties.h"
+using android::base::GetBoolProperty;
+#endif
+
 GrGLCaps::GrGLCaps(const GrContextOptions& contextOptions,
                    const GrGLContextInfo& ctxInfo,
                    const GrGLInterface* glInterface) : INHERITED(contextOptions) {
@@ -273,6 +278,9 @@ void GrGLCaps::init(const GrContextOptions& contextOptions,
             this->fShaderCaps->fTextureSwizzleAppliedInShader = false;
         }
     } // no WebGL support
+    if(GetBoolProperty("ro.skia.ignore_swizzle", false)) {
+        this->fShaderCaps->fTextureSwizzleAppliedInShader = true;
+    }
 
     if (GR_IS_GR_GL(standard)) {
         fMipMapLevelAndLodControlSupport = true;
